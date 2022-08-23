@@ -1,0 +1,14 @@
+package io.horizontalsystems.marketkit2.models
+
+import androidx.room.Entity
+import java.math.BigDecimal
+
+@Entity(primaryKeys = ["coinUid", "currencyCode", "interval", "timestamp"])
+data class ChartPointEntity(
+    val coinUid: String,
+    val currencyCode: String,
+    val interval: HsTimePeriod,
+    val value: BigDecimal,
+    val volume: BigDecimal?,
+    val timestamp: Long
+)

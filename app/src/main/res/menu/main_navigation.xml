@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_market"
+        android:icon="@drawable/ic_graph_light"
+        android:title="@string/Market_Title" />
+
+    <item
+        android:id="@+id/navigation_balance"
+        android:icon="@drawable/ic_wallet_light"
+        android:title="Wallet" />
+
+    <item
+        android:id="@+id/navigation_exchange"
+        android:icon="@drawable/ic_globe_20"
+        android:title="Website" />
+
+    <item
+        android:id="@+id/navigation_transactions"
+        android:icon="@drawable/ic_transaction_light"
+        android:title="Transak" />
+
+
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_setting_light"
+        android:title="@string/Settings_Title" />
+
+</menu>

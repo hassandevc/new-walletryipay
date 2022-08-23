@@ -1,0 +1,13 @@
+include ':ui'
+include ':components:snackbar'
+include ':app'
+
+include ':core'
+include ':marketkit2'
+include ':components:views'
+include ':components:icons'
+include ':components:languageswitcher'
+include ':components:chartview'
+include ':components:keystore'
+include ':components:pin'
+include ':components:seekbar'

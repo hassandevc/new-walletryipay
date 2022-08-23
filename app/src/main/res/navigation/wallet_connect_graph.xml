@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/wallet_connect_graph"
+    app:startDestination="@+id/wcListFragment">
+    <fragment
+        android:id="@+id/wcListFragment"
+        android:name="io.horizontalsystems.bankwallet.modules.walletconnect.list.WCListFragment">
+        <action
+            android:id="@+id/wcListFragment_to_wcSessionFragment"
+            app:destination="@id/wcSessionFragment" />
+        <deepLink
+            app:action=""
+            android:id="@+id/deepLink"
+            app:uri="wc:{topic}"/>
+        <argument android:name="topic" app:argType="string"/>
+        <argument android:name="bridge" app:argType="string"/>
+        <argument android:name="key" app:argType="string"/>
+    </fragment>
+    <fragment
+        android:id="@+id/wcSessionFragment"
+        android:name="io.horizontalsystems.bankwallet.modules.walletconnect.session.v1.WCSessionFragment">
+        <action
+            android:id="@+id/wcSessionFragment_to_wcSendEthereumTransactionRequestFragment"
+            app:destination="@id/wcSendEthereumTransactionRequestFragment" />
+        <action
+            android:id="@+id/wcSessionFragment_to_wcSignMessageRequestFragment"
+            app:destination="@id/wcSignMessageRequestFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wc2SessionFragment"
+        android:name="io.horizontalsystems.bankwallet.modules.walletconnect.session.v2.WC2SessionFragment">
+        <action
+            android:id="@+id/wc2SessionFragment_to_wc2SignMessageRequestFragment"
+            app:destination="@id/wc2SignMessageRequestFragment" />
+        <action
+            android:id="@+id/wc2SessionFragment_to_wc2SendEthRequestFragment"
+            app:destination="@id/wc2SendEthereumTransactionRequestFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wc2RequestListFragment"
+        android:name="io.horizontalsystems.bankwallet.modules.walletconnect.requestlist.WC2RequestListFragment">
+        <action
+            android:id="@+id/wc2RequestListFragment_to_wcSignMessageRequestFragment"
+            app:destination="@id/wc2SignMessageRequestFragment" />
+        <action
+            android:id="@+id/wc2RequestListFragment_to_wcSendEthRequestFragment"
+            app:destination="@id/wc2SendEthereumTransactionRequestFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wcSendEthereumTransactionRequestFragment"
+        android:name="io.horizontalsystems.bankwallet.modules.walletconnect.request.sendtransaction.v1.WCSendEthereumTransactionRequestFragment">
+    </fragment>
+    <fragment
+        android:id="@+id/wcSignMessageRequestFragment"
+        android:name="io.horizontalsystems.bankwallet.modules.walletconnect.request.signmessage.v1.WCSignMessageRequestFragment">
+        <action
+            android:id="@+id/wcSignMessageRequestFragment_to_wcDisplayTypedMessageFragment"
+            app:destination="@id/wcDisplayTypedMessageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wc2SignMessageRequestFragment"
+        android:name="io.horizontalsystems.bankwallet.modules.walletconnect.request.signmessage.v2.WC2SignMessageRequestFragment">
+        <action
+            android:id="@+id/wcSignMessageRequestFragment_to_wcDisplayTypedMessageFragment"
+            app:destination="@id/wcDisplayTypedMessageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wc2SendEthereumTransactionRequestFragment"
+        android:name="io.horizontalsystems.bankwallet.modules.walletconnect.request.sendtransaction.v2.WC2SendEthereumTransactionRequestFragment"/>
+    <fragment
+        android:id="@+id/wcDisplayTypedMessageFragment"
+        android:name="io.horizontalsystems.bankwallet.modules.walletconnect.request.signmessage.WCDisplayTypedMessageFragment"/>
+</navigation>
