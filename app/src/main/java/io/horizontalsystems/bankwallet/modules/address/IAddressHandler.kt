@@ -1,9 +1,9 @@
 package io.horizontalsystems.bankwallet.modules.address
-
-import com.unstoppabledomains.resolution.Resolution
 import io.horizontalsystems.bankwallet.entities.Address
 import io.horizontalsystems.ethereumkit.core.AddressValidator
 import io.horizontalsystems.marketkit2.models.CoinType
+import com.unstoppabledomains.resolution.Resolution
+import java.net.URL
 
 interface IAddressHandler {
     fun isSupported(value: String): Boolean
@@ -12,67 +12,73 @@ interface IAddressHandler {
 
 class AddressHandlerUdn(private val coinType: CoinType, private val coinCode: String) : IAddressHandler {
     private val resolution = Resolution()
-    private val chain by lazy { chain(coinType) }
-    private val chainCoinCode by lazy { chainCoinCode(coinType) }
+    private val currencyVersion by lazy { version(coinType, coinCode) }
 
     override fun isSupported(value: String): Boolean {
         return value.contains(".") && resolution.isSupported(value)
     }
 
     override fun parseAddress(value: String): Address {
-        return Address(resolveAddress(value), value)
+        return if (currencyVersion != ""){
+            Address(resolveMultiChain(value, coinCode, currencyVersion), value)
+        }else {
+            Address(resolveSingleChain(value, coinCode), value)
+        }
     }
 
-    private fun resolveAddress(value: String): String {
-        val fetchers = mutableListOf<() -> String?>()
-        fetchers.add {
-            chain?.let { resolution.getMultiChainAddress(value, coinCode, it) }
+    private fun resolveMultiChain(domain: String, currency: String, version: String): String {
+        val resolvedAddress: String
+        try{
+            resolvedAddress = resolution.getMultiChainAddress(domain, currency, version)
+            return resolvedAddress
+        }catch(e: Exception){
+            throw Exception("Unstoppable Domains - Resolution Error: $e")
         }
-        fetchers.add {
-            resolution.getAddress(value, coinCode)
-        }
-        fetchers.add {
-            chainCoinCode?.let { resolution.getAddress(value, it) }
-        }
+    }
 
-        var lastError: Exception? = null
-        for (fetcher in fetchers) {
-            try {
-                fetcher.invoke()?.let { resolvedAddress ->
-                    return resolvedAddress
-                }
-            } catch (e: Exception) {
-                lastError = e
-            }
+    private fun resolveSingleChain(domain: String, currency: String): String {
+        val resolvedAddress: String
+        if (currency == "BNB"){
+            return resolveMultiChain(domain, currency, "BEP20")
         }
-
-        throw lastError!!
+        try{
+            resolvedAddress = resolution.getAddress(domain, currency)
+            return resolvedAddress
+        }catch(e: Exception){
+            throw Exception("Unstoppable Domains - Resolution Error: $e")
+        }
     }
 
     companion object {
-        private fun chainCoinCode(coinType: CoinType) = when (coinType) {
-            is CoinType.Ethereum,
-            is CoinType.Erc20,
-            is CoinType.BinanceSmartChain,
-            is CoinType.Bep20,
-            is CoinType.Polygon,
-            is CoinType.Mrc20 -> "ETH"
-//            is CoinType.EthereumOptimism -> "ETH"
-//            is CoinType.OptimismErc20 -> "ETH"
-//            is CoinType.EthereumArbitrumOne -> "ETH"
-//            is CoinType.ArbitrumOneErc20 -> "ETH"
-            else -> null
-        }
-
-        private fun chain(coinType: CoinType) = when (coinType) {
-            is CoinType.Erc20 -> "ERC20"
-            is CoinType.Bep20 -> "BEP20"
-            is CoinType.Polygon,
-            is CoinType.Mrc20 -> "MATIC"
-            else -> null
+        private fun version(coinType: CoinType, coinCode: String): String {
+            val url = "https://unstoppabledomains.com/api/uns-resolver-keys"
+            val expectedVersion = coinType.toString().split("|")[0].uppercase()
+            val supportedCurrencies: MutableList<String> = ArrayList()
+            var version = ""
+            try{
+                val jsonString = URL(url).readText()
+                val keys = jsonString.split("keys\":{\"crypto.")[1].split("crypto.")
+                for (key in keys) {
+                    val currency = key.split("\":{\"deprecated")
+                    supportedCurrencies.add(currency[0])
+                }
+            }catch(e: Exception){
+                throw Exception("Unstoppable Domains - API Error: $e")
+            }
+            for (currency in supportedCurrencies) {
+                if(currency.startsWith(coinCode)){
+                    if(currency.contains(expectedVersion)){
+                        version = expectedVersion
+                    }
+                }
+            }
+            if (expectedVersion.contains("[0-9]".toRegex()) && version != expectedVersion) {
+                throw Exception("Unstoppable Domains - Unsupported Currency Version: $expectedVersion")
+            } else {
+                return version
+            }
         }
     }
-
 }
 
 class AddressHandlerEvm : IAddressHandler {
