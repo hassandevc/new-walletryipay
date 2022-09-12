@@ -234,7 +234,7 @@ dependencies {
     implementation "com.github.WalletConnect:WalletConnectKotlinV2:1.0.0-beta04"
 
     // Unstoppable Domains
-    implementation 'com.github.unstoppabledomains:resolution-java:6.0.0'
+    implementation 'com.github.unstoppabledomains:resolution-java:6.1.0'
 
     // in case native file tor.so not loading, do full gradle clean and build.
     implementation 'com.github.horizontalsystems:tor-kit-android:6c775c1'
